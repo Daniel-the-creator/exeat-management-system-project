@@ -1,0 +1,44 @@
+{
+  "flutter": {
+    "platforms": {
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "exeat-management-system",
+          "configurations": {
+            "android": "1:514189556692:android:101374906fb187d96c3441",
+            "macos": "1:514189556692:ios:d17bf41e51fc42106c3441",
+            "web": "1:514189556692:web:7968aa065ebbe7b36c3441",
+            "windows": "1:514189556692:web:7968aa065ebbe7b36c3441"
+          }
+        }
+      },
+      "android": {
+        "default": {
+          "projectId": "exeat-management-system",
+          "appId": "1:514189556692:android:101374906fb187d96c3441",
+          "fileOutput": "android/app/google-services.json"
+        }
+      }
+    }
+  },
+  "functions": [
+    {
+      "source": "functions",
+      "codebase": "default",
+      "disallowLegacyRuntimeConfig": true,
+      "ignore": [
+        "node_modules",
+        ".git",
+        "firebase-debug.log",
+        "firebase-debug.*.log",
+        "*.local"
+      ]
+    }
+  ],
+  "firestore": {
+    "database": "(default)",
+    "location": "africa-south1",
+    "rules": "firestore.rules",
+    "indexes": "firestore.indexes.json"
+  }
+}

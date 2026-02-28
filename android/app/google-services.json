@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "514189556692",
+    "project_id": "exeat-management-system",
+    "storage_bucket": "exeat-management-system.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:514189556692:android:101374906fb187d96c3441",
+        "android_client_info": {
+          "package_name": "com.example.exeat_system"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD0bscs1VF-_EaNHo2gY3QVAH7Cv3N53Dk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
