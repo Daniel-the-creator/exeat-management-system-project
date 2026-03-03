@@ -2,6 +2,7 @@ import 'package:exeat_system/model/exeat_request.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:exeat_system/controllers/request_admin_controller.dart';
+import 'package:exeat_system/services/pdf_service.dart';
 
 class ApprovedRequests extends StatefulWidget {
   final String? requestId;
@@ -115,18 +116,12 @@ class _ApprovedRequestsState extends State<ApprovedRequests>
                   const SizedBox(width: 12),
                   Expanded(
                     child: ElevatedButton.icon(
-                      onPressed: () {
-                        Navigator.pop(context);
-                        requestController.updateRequestStatus(
-                          requestId: request.id!,
-                          newStatus: 'rejected',
-                          adminNote: 'Declined after review',
-                        );
-                      },
-                      icon: const Icon(Icons.cancel_rounded),
-                      label: const Text("Decline"),
+                      onPressed: () =>
+                          PdfService.generateAndPrintExeat(request),
+                      icon: const Icon(Icons.download_rounded),
+                      label: const Text("Download PDF"),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.red,
+                        backgroundColor: Colors.blue.shade700,
                         foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         shape: RoundedRectangleBorder(
@@ -136,6 +131,30 @@ class _ApprovedRequestsState extends State<ApprovedRequests>
                     ),
                   ),
                 ],
+              ),
+              const SizedBox(height: 12),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton.icon(
+                  onPressed: () {
+                    Navigator.pop(context);
+                    requestController.updateRequestStatus(
+                      requestId: request.id!,
+                      newStatus: 'rejected',
+                      adminNote: 'Declined after review',
+                    );
+                  },
+                  icon: const Icon(Icons.cancel_rounded),
+                  label: const Text("Decline"),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.red,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                ),
               ),
             ],
           ),

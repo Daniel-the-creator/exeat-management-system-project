@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:exeat_system/controllers/request_controller.dart';
 import 'package:exeat_system/model/request_model.dart';
+import 'package:exeat_system/services/pdf_service.dart';
 
 class RequestHistory extends StatefulWidget {
   const RequestHistory({super.key});
@@ -408,26 +409,47 @@ class _RequestHistoryState extends State<RequestHistory>
                     ),
 
                   const SizedBox(height: 24),
-                  Center(
-                    child: ElevatedButton(
-                      onPressed: () => Navigator.pop(context),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: getStatusColor(request.status),
-                        foregroundColor: Colors.white,
-                        padding: EdgeInsets.symmetric(
-                          horizontal: isSmallScreen ? 24 : 32,
-                          vertical: isSmallScreen ? 12 : 16,
+                  const SizedBox(height: 16),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      if (request.status == 'approved') ...[
+                        ElevatedButton.icon(
+                          onPressed: () =>
+                              PdfService.generateAndPrintExeat(request),
+                          icon: const Icon(Icons.download_rounded),
+                          label: const Text("DOWNLOAD PDF"),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.green,
+                            foregroundColor: Colors.white,
+                            padding: EdgeInsets.symmetric(
+                              horizontal: isSmallScreen ? 16 : 24,
+                              vertical: isSmallScreen ? 12 : 16,
+                            ),
+                          ),
                         ),
-                        minimumSize: Size(isSmallScreen ? 120 : 150, 50),
-                      ),
-                      child: Text(
-                        "CLOSE",
-                        style: TextStyle(
-                          fontSize: isSmallScreen ? 14 : 16,
-                          fontWeight: FontWeight.w600,
+                        const SizedBox(width: 12),
+                      ],
+                      ElevatedButton(
+                        onPressed: () => Navigator.pop(context),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: getStatusColor(request.status),
+                          foregroundColor: Colors.white,
+                          padding: EdgeInsets.symmetric(
+                            horizontal: isSmallScreen ? 24 : 32,
+                            vertical: isSmallScreen ? 12 : 16,
+                          ),
+                          minimumSize: Size(isSmallScreen ? 120 : 150, 50),
+                        ),
+                        child: Text(
+                          "CLOSE",
+                          style: TextStyle(
+                            fontSize: isSmallScreen ? 14 : 16,
+                            fontWeight: FontWeight.w600,
+                          ),
                         ),
                       ),
-                    ),
+                    ],
                   ),
                 ],
               ),
