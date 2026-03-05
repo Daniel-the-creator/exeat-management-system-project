@@ -41,9 +41,11 @@ class PdfService {
                 // Header
                 pw.Center(
                   child: pw.Column(
+                    crossAxisAlignment: pw.CrossAxisAlignment.center,
                     children: [
                       pw.Text(
-                        'UNIVERSITY EXEAT PASS',
+                        'DOMINION UNIVERSITY EXEAT PASS',
+                        textAlign: pw.TextAlign.center,
                         style: pw.TextStyle(
                           fontSize: 26,
                           fontWeight: pw.FontWeight.bold,
@@ -85,7 +87,7 @@ class PdfService {
                         ),
                         pw.SizedBox(height: 8),
                         pw.Text('Request ID: $requestId',
-                            style: pw.TextStyle(fontSize: 10)),
+                            style: const pw.TextStyle(fontSize: 10)),
                       ],
                     ),
                     pw.Column(
@@ -106,11 +108,11 @@ class PdfService {
                     ),
                   ],
                 ),
-                pw.SizedBox(height: 32),
+                pw.SizedBox(height: 12),
 
                 // Student Information
                 _buildPdfHeader('STUDENT INFORMATION'),
-                pw.SizedBox(height: 8),
+                pw.SizedBox(height: 12),
                 pw.Row(
                   children: [
                     pw.Expanded(child: _buildPdfField('Name:', studentName)),
@@ -124,7 +126,7 @@ class PdfService {
                     pw.Expanded(child: _buildPdfField('Phone:', studentPhone)),
                   ],
                 ),
-                pw.SizedBox(height: 24),
+                pw.SizedBox(height: 12),
 
                 // Trip Information
                 _buildPdfHeader('TRIP DETAILS'),
@@ -133,21 +135,15 @@ class PdfService {
                 pw.Row(
                   children: [
                     pw.Expanded(
-                        child: _buildPdfField('Departure Date:', leaveDate)),
+                        child: _buildPdfField(
+                            'Departure:', '$leaveDate, $leaveTime')),
                     pw.Expanded(
-                        child: _buildPdfField('Departure Time:', leaveTime)),
-                  ],
-                ),
-                pw.Row(
-                  children: [
-                    pw.Expanded(
-                        child: _buildPdfField('Return Date:', returnDate)),
-                    pw.Expanded(
-                        child: _buildPdfField('Return Time:', returnTime)),
+                        child: _buildPdfField(
+                            'Return:', '$returnDate, $returnTime')),
                   ],
                 ),
                 _buildPdfField('Reason for Leave:', reason),
-                pw.SizedBox(height: 24),
+                pw.SizedBox(height: 12),
 
                 // Emergency & Security
                 _buildPdfHeader('EMERGENCY CONTACT & SECURITY'),
@@ -161,10 +157,12 @@ class PdfService {
                         child: _buildPdfField('Contact Phone:', contactNumber)),
                   ],
                 ),
-                pw.SizedBox(height: 48),
+                pw.SizedBox(height: 16),
 
                 // Verification Area
-                pw.Spacer(),
+                _buildPdfHeader('VERIFICATION & CLEARANCE'),
+                pw.SizedBox(height: 16),
+
                 pw.Row(
                   mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
                   children: [
@@ -172,29 +170,73 @@ class PdfService {
                       crossAxisAlignment: pw.CrossAxisAlignment.center,
                       children: [
                         pw.Container(
-                            width: 150,
-                            height: 1.5,
+                            width: 160,
+                            height: 1,
                             color: PdfColor.fromHex('#000000')),
-                        pw.SizedBox(height: 4),
+                        pw.SizedBox(height: 3),
                         pw.Text('Authority Signature / Stamp',
-                            style: const pw.TextStyle(fontSize: 10)),
+                            style: pw.TextStyle(
+                                fontSize: 8, fontWeight: pw.FontWeight.bold)),
+                        pw.Text('library officer',
+                            style: const pw.TextStyle(fontSize: 6)),
                       ],
                     ),
                     pw.Column(
                       crossAxisAlignment: pw.CrossAxisAlignment.center,
                       children: [
                         pw.Container(
-                            width: 150,
-                            height: 1.5,
+                            width: 160,
+                            height: 1,
                             color: PdfColor.fromHex('#000000')),
-                        pw.SizedBox(height: 4),
-                        pw.Text('Security Gate Clearance',
-                            style: const pw.TextStyle(fontSize: 10)),
+                        pw.SizedBox(height: 3),
+                        pw.Text('Security Gate (Departure)',
+                            style: pw.TextStyle(
+                                fontSize: 8, fontWeight: pw.FontWeight.bold)),
+                        pw.Text('Signature & Exit Time',
+                            style: const pw.TextStyle(fontSize: 6)),
                       ],
                     ),
                   ],
                 ),
-                pw.SizedBox(height: 32),
+
+                pw.SizedBox(height: 20),
+
+                pw.Row(
+                  mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                  children: [
+                    pw.Column(
+                      crossAxisAlignment: pw.CrossAxisAlignment.center,
+                      children: [
+                        pw.Container(
+                            width: 160,
+                            height: 1,
+                            color: PdfColor.fromHex('#000000')),
+                        pw.SizedBox(height: 3),
+                        pw.Text('Parent / Guardian Signature',
+                            style: pw.TextStyle(
+                                fontSize: 8, fontWeight: pw.FontWeight.bold)),
+                        pw.Text('Confirms student arrived home',
+                            style: const pw.TextStyle(fontSize: 6)),
+                      ],
+                    ),
+                    pw.Column(
+                      crossAxisAlignment: pw.CrossAxisAlignment.center,
+                      children: [
+                        pw.Container(
+                            width: 160,
+                            height: 1,
+                            color: PdfColor.fromHex('#000000')),
+                        pw.SizedBox(height: 3),
+                        pw.Text('Date & Time of Arrival',
+                            style: pw.TextStyle(
+                                fontSize: 8, fontWeight: pw.FontWeight.bold)),
+                        pw.Text('To be filled by Parent/Guardian',
+                            style: const pw.TextStyle(fontSize: 6)),
+                      ],
+                    ),
+                  ],
+                ),
+                pw.SizedBox(height: 15),
                 pw.Center(
                   child: pw.Column(
                     children: [
