@@ -25,6 +25,16 @@ class _PendingRequestsState extends State<PendingRequests>
   String? _highlightRequestId;
   int? _highlightedIndex;
 
+  // Priority filter state
+  String _selectedPriority = 'ALL';
+  final List<String> _priorities = [
+    'ALL',
+    'EMERGENCY',
+    'MEDICAL',
+    'FAMILY',
+    'NORMAL'
+  ];
+
   @override
   void initState() {
     super.initState();
@@ -912,22 +922,39 @@ class _PendingRequestsState extends State<PendingRequests>
                     ),
                   ),
                   child: Obx(() {
-                    if (requestController.pendingRequests.isEmpty) {
-                      return _buildEmptyState(isSmallScreen);
-                    }
-                    return ListView.builder(
-                      padding: EdgeInsets.all(paddingValue),
-                      itemCount: requestController.pendingRequests.length,
-                      itemBuilder: (context, index) {
-                        final request =
-                            requestController.pendingRequests[index];
-                        return _buildAnimatedRequestCard(
-                          request,
-                          index,
-                          isSmallScreen,
-                          isMediumScreen,
-                        );
-                      },
+                    var filteredRequests =
+                        requestController.pendingRequests.where((request) {
+                      if (_selectedPriority == 'ALL') return true;
+                      return request.priorityLevel.toUpperCase() ==
+                          _selectedPriority;
+                    }).toList();
+
+                    return Column(
+                      children: [
+                        _buildFilterSection(isSmallScreen),
+                        Expanded(
+                          child: filteredRequests.isEmpty
+                              ? _buildEmptyState(isSmallScreen)
+                              : ListView.builder(
+                                  padding: EdgeInsets.fromLTRB(
+                                    paddingValue,
+                                    0,
+                                    paddingValue,
+                                    paddingValue,
+                                  ),
+                                  itemCount: filteredRequests.length,
+                                  itemBuilder: (context, index) {
+                                    final request = filteredRequests[index];
+                                    return _buildAnimatedRequestCard(
+                                      request,
+                                      index,
+                                      isSmallScreen,
+                                      isMediumScreen,
+                                    );
+                                  },
+                                ),
+                        ),
+                      ],
                     );
                   }),
                 ),
@@ -1189,6 +1216,52 @@ class _PendingRequestsState extends State<PendingRequests>
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildFilterSection(bool isSmallScreen) {
+    return Container(
+      height: 60,
+      padding: const EdgeInsets.symmetric(vertical: 8),
+      child: ListView.builder(
+        scrollDirection: Axis.horizontal,
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        itemCount: _priorities.length,
+        itemBuilder: (context, index) {
+          final priority = _priorities[index];
+          final isSelected = _selectedPriority == priority;
+
+          return Padding(
+            padding: const EdgeInsets.only(right: 8),
+            child: FilterChip(
+              label: Text(
+                priority,
+                style: TextStyle(
+                  color: isSelected ? Colors.white : Colors.grey[700],
+                  fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                  fontSize: 12,
+                ),
+              ),
+              selected: isSelected,
+              onSelected: (selected) {
+                setState(() {
+                  _selectedPriority = priority;
+                });
+              },
+              selectedColor: const Color(0xff060121),
+              backgroundColor: Colors.white,
+              checkmarkColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+                side: BorderSide(
+                  color:
+                      isSelected ? const Color(0xff060121) : Colors.grey[300]!,
+                ),
+              ),
+            ),
+          );
+        },
       ),
     );
   }

@@ -174,7 +174,7 @@ class PdfService {
                             height: 1,
                             color: PdfColor.fromHex('#000000')),
                         pw.SizedBox(height: 3),
-                        pw.Text('Authority Signature / Stamp',
+                        pw.Text('Authorized Signature / Stamp',
                             style: pw.TextStyle(
                                 fontSize: 8, fontWeight: pw.FontWeight.bold)),
                         pw.Text('library officer',
@@ -246,7 +246,7 @@ class PdfService {
                             fontSize: 10, fontStyle: pw.FontStyle.italic),
                       ),
                       pw.Text(
-                        'Security officers may verify this pass by scanning the student\'s QR code or ID in the Exeat System app.',
+                        'Security officers may verify this pass by scanning the student\'s ID in the Exeat System app.',
                         style: pw.TextStyle(
                             fontSize: 9, color: PdfColor.fromHex('#424242')),
                       ),

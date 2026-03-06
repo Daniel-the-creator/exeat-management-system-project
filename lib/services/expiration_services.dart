@@ -6,67 +6,77 @@ class ExpirationService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   Timer? _timer;
 
-  Future<void> checkAndExpireRequests() async {
+  Future<void> checkAndDeleteExpiredRequests() async {
     if (kDebugMode) {
-      print('Checking for expired requests...');
+      print('🚀 Checking for requests to delete (older than 3 days)...');
     }
 
     final now = DateTime.now();
     final threeDaysAgo = now.subtract(const Duration(days: 3));
 
     try {
-      final expiredRequests = await _firestore
-          .collection('exeatRequests')
-          .where('status',
-              whereIn: ['PENDING_HOD', 'PENDING_SA', 'PENDING_WARDEN'])
-          .where('expiresAt',
+      // Find requests that are pending at any level and created more than 3 days ago
+      final oldPendingRequests = await _firestore
+          .collection('requests')
+          .where('status', whereIn: [
+            'pending_hod',
+            'pending_student_affairs',
+            'pending_warden',
+            'pending'
+          ])
+          .where('createdAt',
               isLessThanOrEqualTo: Timestamp.fromDate(threeDaysAgo))
           .get();
 
-      if (expiredRequests.docs.isEmpty) {
+      if (oldPendingRequests.docs.isEmpty) {
         if (kDebugMode) {
-          print('No expired requests found');
+          print('✅ No old pending requests found for deletion');
         }
         return;
       }
 
+      if (kDebugMode) {
+        print('🗑️ Found ${oldPendingRequests.docs.length} requests to delete');
+      }
+
       WriteBatch batch = _firestore.batch();
 
-      for (var doc in expiredRequests.docs) {
+      for (var doc in oldPendingRequests.docs) {
         final data = doc.data();
 
-        // Mark as expired
-        batch.update(doc.reference, {
-          'status': 'EXPIRED',
-          'lastUpdatedAt': Timestamp.now(),
-          'expiredAt': Timestamp.now(),
-        });
+        // 1. Delete the request document
+        batch.delete(doc.reference);
 
-        // Create notification
-        batch.set(
-          _firestore.collection('notifications').doc(),
-          {
-            'recipientId': data['studentId'],
-            'recipientRole': 'STUDENT',
-            'type': 'REQUEST_EXPIRED',
-            'title': 'Exeat Request Expired',
-            'message':
-                'Your exeat request has expired after 3 days without approval.',
-            'requestId': doc.id,
-            'isRead': false,
-            'createdAt': Timestamp.now(),
-          },
-        );
+        // 2. Create a notification for the student (optional but helpful)
+        // Note: recipientId is studentId
+        final studentId = data['studentId'];
+        if (studentId != null) {
+          batch.set(
+            _firestore.collection('notifications').doc(),
+            {
+              'recipientId': studentId,
+              'recipientRole': 'STUDENT',
+              'type': 'REQUEST_DELETED_AUTO',
+              'title': 'Request Auto-Deleted',
+              'message':
+                  'Your exeat request was deleted after 3 days without approval.',
+              'requestId': doc.id,
+              'isRead': false,
+              'createdAt': Timestamp.now(),
+            },
+          );
+        }
       }
 
       await batch.commit();
 
       if (kDebugMode) {
-        print('Expired ${expiredRequests.docs.length} requests');
+        print(
+            '✅ Successfully deleted ${oldPendingRequests.docs.length} old requests');
       }
     } catch (e) {
       if (kDebugMode) {
-        print('Error expiring requests: $e');
+        print('❌ Error auto-deleting old requests: $e');
       }
     }
   }
@@ -74,11 +84,11 @@ class ExpirationService {
   void startExpirationChecker() {
     // Run every hour when app is open
     _timer = Timer.periodic(const Duration(hours: 1), (timer) async {
-      await checkAndExpireRequests();
+      await checkAndDeleteExpiredRequests();
     });
 
     // Also check immediately on startup
-    checkAndExpireRequests();
+    checkAndDeleteExpiredRequests();
   }
 
   void stopExpirationChecker() {

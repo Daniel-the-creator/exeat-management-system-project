@@ -477,6 +477,12 @@ class RequestAdminController extends GetxController {
 
       print('🔄 Updating request $requestId from $oldStatus to $newStatus');
 
+      // GUARD: Once declined/rejected, it cannot be approved or moved to pending
+      if (oldStatus == 'rejected') {
+        throw Exception(
+            'This request has been declined and cannot be approved or moved back to pending.');
+      }
+
       String finalStatus = newStatus;
       String updatedAdminNote = adminNote;
 

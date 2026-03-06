@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../controllers/request_controller.dart';
 import '../controllers/admin_notification_controller.dart';
+import '../services/expiration_services.dart';
 
 class InitializationService extends GetxService {
   static InitializationService get instance => Get.find();
@@ -18,6 +19,9 @@ class InitializationService extends GetxService {
   void onInit() {
     super.onInit();
     print('🚀 InitializationService started');
+
+    // Start expiration checker
+    Get.find<ExpirationService>().startExpirationChecker();
 
     // Listen to auth state changes
     _auth.authStateChanges().listen((user) {

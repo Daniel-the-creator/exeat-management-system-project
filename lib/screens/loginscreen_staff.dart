@@ -464,6 +464,7 @@ class _LoginscreenStaffState extends State<LoginscreenStaff>
         controller: controller,
         validator: validator,
         keyboardType: TextInputType.emailAddress,
+        textInputAction: TextInputAction.next,
         decoration: InputDecoration(
           hintText: hintText,
           hintStyle: TextStyle(color: Colors.grey[500]),
@@ -487,6 +488,8 @@ class _LoginscreenStaffState extends State<LoginscreenStaff>
       child: TextFormField(
         controller: _passwordController,
         obscureText: _obscurePassword,
+        textInputAction: TextInputAction.done,
+        onFieldSubmitted: (_) => _handleLogin(),
         validator: (value) {
           if (value == null || value.isEmpty) {
             return 'Please enter your password';

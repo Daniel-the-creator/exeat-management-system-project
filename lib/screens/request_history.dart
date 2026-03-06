@@ -20,7 +20,7 @@ class _RequestHistoryState extends State<RequestHistory>
   late double screenHeight;
 
   String _selectedFilter = 'All';
-  final List<String> _filters = [
+  List<String> _filters = [
     'All',
     'Pending',
     'Approved',
@@ -54,16 +54,17 @@ class _RequestHistoryState extends State<RequestHistory>
     final allRequests = _requestController.studentRequests;
 
     if (_selectedFilter == 'All') return allRequests;
-    if (_selectedFilter == 'Pending') {
-      return allRequests.where((req) => req.status == 'pending').toList();
-    }
-    if (_selectedFilter == 'Approved') {
-      return allRequests.where((req) => req.status == 'approved').toList();
-    }
-    if (_selectedFilter == 'Rejected') {
-      return allRequests.where((req) => req.status == 'rejected').toList();
-    }
-    return allRequests;
+
+    return allRequests.where((req) {
+      if (_selectedFilter == 'Pending') {
+        return req.status.contains('pending');
+      } else if (_selectedFilter == 'Approved') {
+        return req.status == 'approved';
+      } else if (_selectedFilter == 'Rejected') {
+        return req.status == 'rejected';
+      }
+      return true;
+    }).toList();
   }
 
   Color getStatusColor(String status) {
@@ -647,39 +648,7 @@ class _RequestHistoryState extends State<RequestHistory>
                 ),
               ),
 
-              // Filter Chips
-              Container(
-                padding:
-                    EdgeInsets.symmetric(horizontal: paddingValue, vertical: 8),
-                height: 60,
-                child: ListView(
-                  scrollDirection: Axis.horizontal,
-                  children: _filters.map((filter) {
-                    return Padding(
-                      padding: const EdgeInsets.only(right: 8),
-                      child: FilterChip(
-                        label: Text(filter),
-                        selected: _selectedFilter == filter,
-                        onSelected: (selected) {
-                          setState(() {
-                            _selectedFilter = filter;
-                          });
-                        },
-                        backgroundColor: Colors.white.withOpacity(0.1),
-                        selectedColor: Colors.white,
-                        labelStyle: TextStyle(
-                          color: _selectedFilter == filter
-                              ? const Color(0xff060121)
-                              : Colors.white,
-                        ),
-                        checkmarkColor: const Color(0xff060121),
-                      ),
-                    );
-                  }).toList(),
-                ),
-              ),
-
-              // Requests List
+              // Content
               Expanded(
                 child: Container(
                   margin: EdgeInsets.only(top: paddingValue * 0.5),
@@ -690,25 +659,80 @@ class _RequestHistoryState extends State<RequestHistory>
                       topRight: Radius.circular(30),
                     ),
                   ),
-                  child: Obx(() {
-                    final filteredRequests = getFilteredRequests();
+                  child: Column(
+                    children: [
+                      // Filter Section (Status)
+                      Container(
+                        padding: EdgeInsets.symmetric(
+                            horizontal: paddingValue, vertical: 8),
+                        height: 55,
+                        child: ListView(
+                          scrollDirection: Axis.horizontal,
+                          children: _filters.map((filter) {
+                            return Padding(
+                              padding: const EdgeInsets.only(right: 8),
+                              child: FilterChip(
+                                label: Text(filter),
+                                selected: _selectedFilter == filter,
+                                onSelected: (selected) {
+                                  setState(() {
+                                    _selectedFilter = filter;
+                                  });
+                                },
+                                backgroundColor:
+                                    const Color(0xff060121).withOpacity(0.05),
+                                selectedColor: const Color(0xff060121),
+                                labelStyle: TextStyle(
+                                  color: _selectedFilter == filter
+                                      ? Colors.white
+                                      : const Color(0xff060121),
+                                  fontSize: 12,
+                                  fontWeight: _selectedFilter == filter
+                                      ? FontWeight.bold
+                                      : FontWeight.normal,
+                                ),
+                                checkmarkColor: Colors.white,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(20),
+                                  side: BorderSide(
+                                    color: _selectedFilter == filter
+                                        ? const Color(0xff060121)
+                                        : Colors.grey[300]!,
+                                  ),
+                                ),
+                              ),
+                            );
+                          }).toList(),
+                        ),
+                      ),
 
-                    if (filteredRequests.isEmpty) {
-                      return _buildEmptyState();
-                    }
+                      const SizedBox(height: 8),
 
-                    return ListView.builder(
-                      padding: EdgeInsets.all(paddingValue),
-                      itemCount: filteredRequests.length,
-                      itemBuilder: (context, index) {
-                        final request = filteredRequests[index];
-                        return FadeTransition(
-                          opacity: _fadeAnimation,
-                          child: _buildRequestCard(request),
-                        );
-                      },
-                    );
-                  }),
+                      // List
+                      Expanded(
+                        child: Obx(() {
+                          final filteredRequests = getFilteredRequests();
+
+                          if (filteredRequests.isEmpty) {
+                            return _buildEmptyState();
+                          }
+
+                          return ListView.builder(
+                            padding: EdgeInsets.fromLTRB(
+                                paddingValue, 0, paddingValue, paddingValue),
+                            itemCount: filteredRequests.length,
+                            itemBuilder: (context, index) {
+                              final request = filteredRequests[index];
+                              return FadeTransition(
+                                opacity: _fadeAnimation,
+                                child: _buildRequestCard(request),
+                              );
+                            },
+                          );
+                        }),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ],

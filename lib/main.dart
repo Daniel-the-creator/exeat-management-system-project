@@ -2,6 +2,7 @@ import 'package:exeat_system/controllers/admin_notification_controller.dart';
 import 'package:exeat_system/controllers/notification_controller.dart';
 import 'package:exeat_system/screens/splash.dart';
 import 'package:exeat_system/services/initialization_service.dart';
+import 'package:exeat_system/services/expiration_services.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -89,6 +90,7 @@ class AppBindings extends Bindings {
     Get.lazyPut(() => AdminProfileController(), fenix: true);
     Get.lazyPut(() => StudentNotificationController(), fenix: true);
     Get.lazyPut(() => AdminNotificationController(), fenix: true);
+    Get.lazyPut(() => ExpirationService(), fenix: true);
     Get.lazyPut(() => InitializationService(), fenix: true);
 
     print('✅ All controllers registered with GetX');

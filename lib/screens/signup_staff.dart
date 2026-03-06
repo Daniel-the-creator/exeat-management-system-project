@@ -1339,6 +1339,8 @@ class _SignupStaffState extends State<SignupStaff>
                           controller: _confirmController,
                           hintText: 'Confirm Password*',
                           isPassword: false,
+                          textInputAction: TextInputAction.done,
+                          onFieldSubmitted: (_) => _handleSignUp(),
                           validator: (value) {
                             if (value == null || value.isEmpty) {
                               return 'Please confirm your password';
@@ -1543,6 +1545,7 @@ class _SignupStaffState extends State<SignupStaff>
                   controller: _phoneController,
                   keyboardType: TextInputType.phone,
                   maxLength: 11, // Changed from 13 to 11 for digits only
+                  textInputAction: TextInputAction.next,
                   inputFormatters: [
                     FilteringTextInputFormatter.digitsOnly,
                   ],
@@ -1630,6 +1633,8 @@ class _SignupStaffState extends State<SignupStaff>
     required String hintText,
     required IconData icon,
     required TextEditingController controller,
+    TextInputAction? textInputAction,
+    void Function(String)? onFieldSubmitted,
     required String? Function(String?) validator,
   }) {
     return Container(
@@ -1641,6 +1646,8 @@ class _SignupStaffState extends State<SignupStaff>
         child: TextFormField(
           controller: controller,
           validator: validator,
+          textInputAction: textInputAction ?? TextInputAction.next,
+          onFieldSubmitted: onFieldSubmitted,
           decoration: InputDecoration(
             hintText: hintText,
             hintStyle: TextStyle(color: Colors.grey[500]),
@@ -1657,6 +1664,8 @@ class _SignupStaffState extends State<SignupStaff>
     required TextEditingController controller,
     required String hintText,
     required bool isPassword,
+    TextInputAction? textInputAction,
+    void Function(String)? onFieldSubmitted,
     required String? Function(String?) validator,
   }) {
     return Container(
@@ -1669,6 +1678,8 @@ class _SignupStaffState extends State<SignupStaff>
           controller: controller,
           obscureText: isPassword ? _obscurePassword : _obscureConfirmPassword,
           validator: validator,
+          textInputAction: textInputAction ?? TextInputAction.next,
+          onFieldSubmitted: onFieldSubmitted,
           decoration: InputDecoration(
             hintText: hintText,
             hintStyle: TextStyle(color: Colors.grey[500]),

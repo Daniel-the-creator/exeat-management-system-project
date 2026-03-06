@@ -89,49 +89,27 @@ class _DeclinedRequestsState extends State<DeclinedRequests>
               _buildDetailRow(Icons.description, "Reason", request.reason),
               const SizedBox(height: 24),
               Row(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Expanded(
-                    child: OutlinedButton.icon(
-                      onPressed: () {
-                        Navigator.pop(context);
-                        requestController.updateRequestStatus(
-                          requestId: request.id!,
-                          newStatus: 'pending',
-                          adminNote: 'Moved back to pending',
-                        );
-                      },
-                      icon: const Icon(Icons.arrow_back_rounded),
-                      label: const Text("Move to Pending"),
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: Colors.orange,
-                        side: const BorderSide(color: Colors.orange, width: 2),
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
+                  ElevatedButton(
+                    onPressed: () => Navigator.pop(context),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xff060121),
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 32,
+                        vertical: 16,
                       ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      minimumSize: const Size(150, 50),
                     ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: ElevatedButton.icon(
-                      onPressed: () {
-                        Navigator.pop(context);
-                        requestController.updateRequestStatus(
-                          requestId: request.id!,
-                          newStatus: 'approved',
-                          adminNote: 'Approved after review',
-                        );
-                      },
-                      icon: const Icon(Icons.check_circle_rounded),
-                      label: const Text("Approve"),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.green,
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
+                    child: const Text(
+                      "CLOSE",
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
                   ),

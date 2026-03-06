@@ -1158,6 +1158,8 @@ class _SignupState extends State<Signup> with TickerProviderStateMixin {
                           controller: _confirmController,
                           hintText: 'Confirm Password*',
                           isPassword: false,
+                          textInputAction: TextInputAction.done,
+                          onFieldSubmitted: (_) => _handleSignUp(),
                           validator: (value) {
                             if (value == null || value.isEmpty) {
                               return 'Please confirm your password';
@@ -1274,6 +1276,7 @@ class _SignupState extends State<Signup> with TickerProviderStateMixin {
                   controller: _phoneController,
                   keyboardType: TextInputType.phone,
                   maxLength: 11,
+                  textInputAction: TextInputAction.next,
                   inputFormatters: [
                     FilteringTextInputFormatter.digitsOnly,
                   ],
@@ -1364,6 +1367,8 @@ class _SignupState extends State<Signup> with TickerProviderStateMixin {
     required TextEditingController controller,
     TextInputType? keyboardType,
     List<TextInputFormatter>? inputFormatters,
+    TextInputAction? textInputAction,
+    void Function(String)? onFieldSubmitted,
     required String? Function(String?) validator,
   }) {
     return Container(
@@ -1377,6 +1382,8 @@ class _SignupState extends State<Signup> with TickerProviderStateMixin {
         validator: validator,
         keyboardType: keyboardType ?? TextInputType.text,
         inputFormatters: inputFormatters,
+        textInputAction: textInputAction ?? TextInputAction.next,
+        onFieldSubmitted: onFieldSubmitted,
         decoration: InputDecoration(
           hintText: hintText,
           hintStyle: TextStyle(color: Colors.grey[500]),
@@ -1394,6 +1401,8 @@ class _SignupState extends State<Signup> with TickerProviderStateMixin {
     required TextEditingController controller,
     required String hintText,
     required bool isPassword,
+    TextInputAction? textInputAction,
+    void Function(String)? onFieldSubmitted,
     required String? Function(String?) validator,
   }) {
     return Container(
@@ -1406,6 +1415,8 @@ class _SignupState extends State<Signup> with TickerProviderStateMixin {
         controller: controller,
         obscureText: isPassword ? _obscurePassword : _obscureConfirmPassword,
         validator: validator,
+        textInputAction: textInputAction ?? TextInputAction.next,
+        onFieldSubmitted: onFieldSubmitted,
         decoration: InputDecoration(
           hintText: hintText,
           hintStyle: TextStyle(color: Colors.grey[500]),
