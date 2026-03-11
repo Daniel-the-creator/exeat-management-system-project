@@ -256,36 +256,81 @@ class _AdminDashboardState extends State<AdminDashboard>
                         // Stats Cards
                         _buildAnimatedWidget(
                           delay: 0.0,
-                          child: Obx(() => Row(
-                                children: [
-                                  Expanded(
-                                    child: _statCard(
-                                      "Pending",
-                                      requestController.pendingCount.value,
-                                      Icons.hourglass_empty_rounded,
-                                      Colors.orange,
+                          child: Obx(() {
+                            final screenWidth =
+                                MediaQuery.of(context).size.width;
+                            final isSmallScreen = screenWidth < 600;
+
+                            if (isSmallScreen) {
+                              return SingleChildScrollView(
+                                scrollDirection: Axis.horizontal,
+                                child: Row(
+                                  children: [
+                                    SizedBox(
+                                      width: (screenWidth - 48) / 2.2,
+                                      child: _statCard(
+                                        "Pending",
+                                        requestController.pendingCount.value,
+                                        Icons.hourglass_empty_rounded,
+                                        Colors.orange,
+                                      ),
                                     ),
-                                  ),
-                                  const SizedBox(width: 12),
-                                  Expanded(
-                                    child: _statCard(
-                                      "Approved",
-                                      requestController.approvedCount.value,
-                                      Icons.check_circle_rounded,
-                                      Colors.green,
+                                    const SizedBox(width: 12),
+                                    SizedBox(
+                                      width: (screenWidth - 48) / 2.2,
+                                      child: _statCard(
+                                        "Approved",
+                                        requestController.approvedCount.value,
+                                        Icons.check_circle_rounded,
+                                        Colors.green,
+                                      ),
                                     ),
-                                  ),
-                                  const SizedBox(width: 12),
-                                  Expanded(
-                                    child: _statCard(
-                                      "Declined",
-                                      requestController.declinedCount.value,
-                                      Icons.cancel_rounded,
-                                      Colors.red,
+                                    const SizedBox(width: 12),
+                                    SizedBox(
+                                      width: (screenWidth - 48) / 2.2,
+                                      child: _statCard(
+                                        "Declined",
+                                        requestController.declinedCount.value,
+                                        Icons.cancel_rounded,
+                                        Colors.red,
+                                      ),
                                     ),
+                                  ],
+                                ),
+                              );
+                            }
+
+                            return Row(
+                              children: [
+                                Expanded(
+                                  child: _statCard(
+                                    "Pending",
+                                    requestController.pendingCount.value,
+                                    Icons.hourglass_empty_rounded,
+                                    Colors.orange,
                                   ),
-                                ],
-                              )),
+                                ),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: _statCard(
+                                    "Approved",
+                                    requestController.approvedCount.value,
+                                    Icons.check_circle_rounded,
+                                    Colors.green,
+                                  ),
+                                ),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: _statCard(
+                                    "Declined",
+                                    requestController.declinedCount.value,
+                                    Icons.cancel_rounded,
+                                    Colors.red,
+                                  ),
+                                ),
+                              ],
+                            );
+                          }),
                         ),
 
                         const SizedBox(height: 20),

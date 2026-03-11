@@ -65,31 +65,36 @@ class _SplashScreenState extends State<SplashScreen> {
 
   Future<bool> _checkIfStudent(String userId) async {
     try {
+      // Use a timeout to prevent hanging if offline
+      // First try to check cache, or just do a quick get with timeout
       final studentDoc = await FirebaseFirestore.instance
           .collection('students')
           .doc(userId)
-          .get();
+          .get(const GetOptions(source: Source.serverAndCache))
+          .timeout(const Duration(seconds: 5));
+
+      if (studentDoc.exists) {
+        return true;
+      }
 
       final adminDoc = await FirebaseFirestore.instance
           .collection('admins')
           .doc(userId)
-          .get();
-
-      // If user exists in students collection and not in admins, they're a student
-      if (studentDoc.exists && !adminDoc.exists) {
-        return true;
-      }
+          .get(const GetOptions(source: Source.serverAndCache))
+          .timeout(const Duration(seconds: 5));
 
       // If user exists in admins collection, they're an admin
       if (adminDoc.exists) {
         return false;
       }
 
-      // Default to student if not found in either (shouldn't happen)
+      // Default to student if not found (or check local storage if you had it)
       return true;
     } catch (e) {
-      print('❌ Error checking user type: $e');
-      return true; // Default to student on error
+      print('⚠️ Connection slow or offline, using default/cached mapping: $e');
+      // If we're here, it might be a timeout.
+      // In a real app, you might store the user type in SharedPreferences after first login
+      return true;
     }
   }
 

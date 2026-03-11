@@ -62,11 +62,15 @@ class InitializationService extends GetxService {
 
   Future<bool> _isStudentUser(String userId) async {
     try {
-      final studentDoc =
-          await _firestore.collection('students').doc(userId).get();
+      final studentDoc = await _firestore
+          .collection('students')
+          .doc(userId)
+          .get(const GetOptions(source: Source.serverAndCache))
+          .timeout(const Duration(seconds: 5));
       return studentDoc.exists;
     } catch (e) {
       print('❌ Error checking user type: $e');
+      // If offline/error, we default to student if cached doc exists or just return false
       return false;
     }
   }

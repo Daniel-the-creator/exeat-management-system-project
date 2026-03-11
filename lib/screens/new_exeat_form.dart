@@ -600,27 +600,42 @@ class _NewExeatFormState extends State<NewExeatForm>
                         ),
                       ),
                       const SizedBox(height: 8),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: _buildDateTimeField(
-                              hint: "SELECT DATE",
-                              controller: leaveDateController,
-                              onTap: () => _selectDate(leaveDateController),
-                              icon: Icons.calendar_today_rounded,
+                      if (screenWidth < 500) ...[
+                        _buildDateTimeField(
+                          hint: "SELECT DATE",
+                          controller: leaveDateController,
+                          onTap: () => _selectDate(leaveDateController),
+                          icon: Icons.calendar_today_rounded,
+                        ),
+                        const SizedBox(height: 12),
+                        _buildDateTimeField(
+                          hint: "SELECT TIME",
+                          controller: leaveTimeController,
+                          onTap: () => _selectTime(leaveTimeController),
+                          icon: Icons.access_time_rounded,
+                        ),
+                      ] else
+                        Row(
+                          children: [
+                            Expanded(
+                              child: _buildDateTimeField(
+                                hint: "SELECT DATE",
+                                controller: leaveDateController,
+                                onTap: () => _selectDate(leaveDateController),
+                                icon: Icons.calendar_today_rounded,
+                              ),
                             ),
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: _buildDateTimeField(
-                              hint: "SELECT TIME",
-                              controller: leaveTimeController,
-                              onTap: () => _selectTime(leaveTimeController),
-                              icon: Icons.access_time_rounded,
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: _buildDateTimeField(
+                                hint: "SELECT TIME",
+                                controller: leaveTimeController,
+                                onTap: () => _selectTime(leaveTimeController),
+                                icon: Icons.access_time_rounded,
+                              ),
                             ),
-                          ),
-                        ],
-                      ),
+                          ],
+                        ),
                       const SizedBox(height: 20),
 
                       // Return Date and Time
@@ -633,27 +648,42 @@ class _NewExeatFormState extends State<NewExeatForm>
                         ),
                       ),
                       const SizedBox(height: 8),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: _buildDateTimeField(
-                              hint: "SELECT DATE",
-                              controller: returnDateController,
-                              onTap: () => _selectDate(returnDateController),
-                              icon: Icons.calendar_today_rounded,
+                      if (screenWidth < 500) ...[
+                        _buildDateTimeField(
+                          hint: "SELECT DATE",
+                          controller: returnDateController,
+                          onTap: () => _selectDate(returnDateController),
+                          icon: Icons.calendar_today_rounded,
+                        ),
+                        const SizedBox(height: 12),
+                        _buildDateTimeField(
+                          hint: "SELECT TIME",
+                          controller: returnTimeController,
+                          onTap: () => _selectTime(returnTimeController),
+                          icon: Icons.access_time_rounded,
+                        ),
+                      ] else
+                        Row(
+                          children: [
+                            Expanded(
+                              child: _buildDateTimeField(
+                                hint: "SELECT DATE",
+                                controller: returnDateController,
+                                onTap: () => _selectDate(returnDateController),
+                                icon: Icons.calendar_today_rounded,
+                              ),
                             ),
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: _buildDateTimeField(
-                              hint: "SELECT TIME",
-                              controller: returnTimeController,
-                              onTap: () => _selectTime(returnTimeController),
-                              icon: Icons.access_time_rounded,
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: _buildDateTimeField(
+                                hint: "SELECT TIME",
+                                controller: returnTimeController,
+                                onTap: () => _selectTime(returnTimeController),
+                                icon: Icons.access_time_rounded,
+                              ),
                             ),
-                          ),
-                        ],
-                      ),
+                          ],
+                        ),
                       const SizedBox(height: 20),
 
                       _buildTextField(

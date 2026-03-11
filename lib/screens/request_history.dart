@@ -20,7 +20,7 @@ class _RequestHistoryState extends State<RequestHistory>
   late double screenHeight;
 
   String _selectedFilter = 'All';
-  List<String> _filters = [
+  final List<String> _filters = [
     'All',
     'Pending',
     'Approved',

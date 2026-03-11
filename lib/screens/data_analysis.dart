@@ -353,31 +353,79 @@ class _StudentsExeatListScreenState extends State<StudentsExeatListScreen> {
                     ),
                   ],
                 ),
-                child: Row(
-                  children: [
-                    Expanded(
-                        child: _buildStat(
-                            'Total Students',
-                            '${summaries.length}',
-                            Icons.people_outline,
-                            Colors.blue.shade300)),
-                    _divider(),
-                    Expanded(
-                        child: _buildStat('Total Days', '$totalDays',
-                            Icons.calendar_today, Colors.green.shade300)),
-                    _divider(),
-                    Expanded(
-                        child: _buildStat('Total Exeats', '$totalExeats',
-                            Icons.logout, Colors.orange.shade300)),
-                    _divider(),
-                    Expanded(
-                        child: _buildStat(
-                            'Avg Days',
-                            avgDays.toStringAsFixed(1),
-                            Icons.trending_up,
-                            Colors.purple.shade300)),
-                  ],
-                ),
+                child: LayoutBuilder(builder: (context, constraints) {
+                  if (constraints.maxWidth < 600) {
+                    return Column(
+                      children: [
+                        Row(
+                          children: [
+                            Expanded(
+                                child: _buildStat(
+                                    'Total Students',
+                                    '${summaries.length}',
+                                    Icons.people_outline,
+                                    Colors.blue.shade300)),
+                            _divider(),
+                            Expanded(
+                                child: _buildStat(
+                                    'Total Days',
+                                    '$totalDays',
+                                    Icons.calendar_today,
+                                    Colors.green.shade300)),
+                          ],
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 8.0),
+                          child: Divider(
+                              color: Colors.white.withOpacity(0.1),
+                              thickness: 1),
+                        ),
+                        Row(
+                          children: [
+                            Expanded(
+                                child: _buildStat(
+                                    'Total Exeats',
+                                    '$totalExeats',
+                                    Icons.logout,
+                                    Colors.orange.shade300)),
+                            _divider(),
+                            Expanded(
+                                child: _buildStat(
+                                    'Avg Days',
+                                    avgDays.toStringAsFixed(1),
+                                    Icons.trending_up,
+                                    Colors.purple.shade300)),
+                          ],
+                        ),
+                      ],
+                    );
+                  }
+                  return Row(
+                    children: [
+                      Expanded(
+                          child: _buildStat(
+                              'Total Students',
+                              '${summaries.length}',
+                              Icons.people_outline,
+                              Colors.blue.shade300)),
+                      _divider(),
+                      Expanded(
+                          child: _buildStat('Total Days', '$totalDays',
+                              Icons.calendar_today, Colors.green.shade300)),
+                      _divider(),
+                      Expanded(
+                          child: _buildStat('Total Exeats', '$totalExeats',
+                              Icons.logout, Colors.orange.shade300)),
+                      _divider(),
+                      Expanded(
+                          child: _buildStat(
+                              'Avg Days',
+                              avgDays.toStringAsFixed(1),
+                              Icons.trending_up,
+                              Colors.purple.shade300)),
+                    ],
+                  );
+                }),
               ),
 
               // Quick filters
@@ -732,29 +780,57 @@ class OverallAnalyticsDashboard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // Summary Cards
-                Row(
-                  children: [
-                    Expanded(
-                        child: _overallStatCard(
-                            'Total', total, Icons.list_alt, Colors.blue)),
-                    const SizedBox(width: 10),
-                    Expanded(
-                        child: _overallStatCard('Approved', approved,
-                            Icons.check_circle, Colors.green)),
-                  ],
-                ),
-                const SizedBox(height: 10),
-                Row(
-                  children: [
-                    Expanded(
-                        child: _overallStatCard('Pending', pending,
-                            Icons.hourglass_empty, Colors.orange)),
-                    const SizedBox(width: 10),
-                    Expanded(
-                        child: _overallStatCard(
-                            'Rejected', rejected, Icons.cancel, Colors.red)),
-                  ],
-                ),
+                LayoutBuilder(builder: (context, constraints) {
+                  final isSmall = constraints.maxWidth < 600;
+                  if (isSmall) {
+                    return Column(
+                      children: [
+                        Row(
+                          children: [
+                            Expanded(
+                                child: _overallStatCard('Total', total,
+                                    Icons.list_alt, Colors.blue)),
+                            const SizedBox(width: 10),
+                            Expanded(
+                                child: _overallStatCard('Approved', approved,
+                                    Icons.check_circle, Colors.green)),
+                          ],
+                        ),
+                        const SizedBox(height: 10),
+                        Row(
+                          children: [
+                            Expanded(
+                                child: _overallStatCard('Pending', pending,
+                                    Icons.hourglass_empty, Colors.orange)),
+                            const SizedBox(width: 10),
+                            Expanded(
+                                child: _overallStatCard('Rejected', rejected,
+                                    Icons.cancel, Colors.red)),
+                          ],
+                        ),
+                      ],
+                    );
+                  }
+                  return Row(
+                    children: [
+                      Expanded(
+                          child: _overallStatCard(
+                              'Total', total, Icons.list_alt, Colors.blue)),
+                      const SizedBox(width: 10),
+                      Expanded(
+                          child: _overallStatCard('Approved', approved,
+                              Icons.check_circle, Colors.green)),
+                      const SizedBox(width: 10),
+                      Expanded(
+                          child: _overallStatCard('Pending', pending,
+                              Icons.hourglass_empty, Colors.orange)),
+                      const SizedBox(width: 10),
+                      Expanded(
+                          child: _overallStatCard(
+                              'Rejected', rejected, Icons.cancel, Colors.red)),
+                    ],
+                  );
+                }),
                 const SizedBox(height: 20),
 
                 // Monthly requests bar chart

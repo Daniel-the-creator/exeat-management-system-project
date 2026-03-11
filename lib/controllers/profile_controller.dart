@@ -85,28 +85,36 @@ class ProfileController extends GetxController {
   // Helper method to get user document from either students or admins collection
   Future<DocumentSnapshot?> _getUserDocument(String uid) async {
     try {
-      // Try students collection first
-      DocumentSnapshot studentDoc =
-          await _firestore.collection('students').doc(uid).get();
+      // Try students collection first with a timeout for offline support
+      DocumentSnapshot studentDoc = await _firestore
+          .collection('students')
+          .doc(uid)
+          .get(const GetOptions(source: Source.serverAndCache))
+          .timeout(const Duration(seconds: 5));
 
       if (studentDoc.exists) {
-        print('Found user in students collection');
+        print('Found user in students collection (Cache/Server)');
         return studentDoc;
       }
 
       // If not found in students, try admins collection
-      DocumentSnapshot adminDoc =
-          await _firestore.collection('admins').doc(uid).get();
+      DocumentSnapshot adminDoc = await _firestore
+          .collection('admins')
+          .doc(uid)
+          .get(const GetOptions(source: Source.serverAndCache))
+          .timeout(const Duration(seconds: 5));
 
       if (adminDoc.exists) {
-        print('Found user in admins collection');
+        print('Found user in admins collection (Cache/Server)');
         return adminDoc;
       }
 
       print('User not found in any collection');
       return null;
     } catch (e) {
-      print('Error getting user document: $e');
+      print('⚠️ Error/Timeout getting user document: $e');
+      // On timeout or error, we might still have data in cache that Firestore handles
+      // But if we're here, the await itself failed or timed out.
       return null;
     }
   }
