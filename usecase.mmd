@@ -1,0 +1,46 @@
+flowchart LR
+    %% Styling
+    classDef actorStyle fill:#2b2b2b,stroke:#a3a3a3,stroke-width:2px,color:#fff,shape:circle
+    classDef usecaseStyle fill:#003b5c,stroke:#00a3e0,stroke-width:2px,color:#fff,rx:20,ry:20
+
+    %% Actors
+    subgraph Actors [Actors]
+        direction TB
+        Student(((Student)))
+        Staff(((Staff / Admin)))
+    end
+
+    class Student,Staff actorStyle
+
+    %% System Boundary
+    subgraph ExeatSystem [Exeat System]
+        direction TB
+        UC1(Sign Up & Login)
+        UC2(Reset/Forgot Password)
+        UC3(Manage Profile)
+        UC4(Apply for New Exeat)
+        UC5(View Exeat History & Status)
+        UC6(Receive/View Notifications)
+        UC7(Approve/Decline Exeats)
+        UC8(View Data Analysis)
+        UC9(View System Dashboard)
+        
+        class UC1,UC2,UC3,UC4,UC5,UC6,UC7,UC8,UC9 usecaseStyle
+    end
+
+    %% Student Relationships
+    Student ===> UC1
+    Student ===> UC2
+    Student ===> UC3
+    Student ===> UC4
+    Student ===> UC5
+    Student ===> UC6
+
+    %% Staff Relationships
+    Staff ===> UC1
+    Staff ===> UC2
+    Staff ===> UC3
+    Staff ===> UC6
+    Staff ===> UC7
+    Staff ===> UC8
+    Staff ===> UC9

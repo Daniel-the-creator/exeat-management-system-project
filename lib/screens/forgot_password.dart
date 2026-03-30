@@ -1,5 +1,5 @@
 import 'package:exeat_system/screens/login_screen__student.dart';
-import 'package:exeat_system/screens/set_new_password.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -18,7 +18,8 @@ class _ForgotPasswordState extends State<ForgotPassword>
   late Animation<double> _fadeAnimation;
   late Animation<Offset> _slideAnimation;
 
-  final TextEditingController _codeController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final FirebaseAuth _auth = FirebaseAuth.instance;
   bool _isLoading = false;
 
   @override
@@ -54,13 +55,14 @@ class _ForgotPasswordState extends State<ForgotPassword>
   void dispose() {
     _fadeController.dispose();
     _slideController.dispose();
-    _codeController.dispose();
+    _emailController.dispose();
     super.dispose();
   }
 
   Future<void> _handleContinue() async {
-    if (_codeController.text.isEmpty) {
-      _showSnackBar('Please enter the verification code');
+    final email = _emailController.text.trim();
+    if (email.isEmpty) {
+      _showSnackBar('Please enter your email address', isError: true);
       return;
     }
 
@@ -68,21 +70,35 @@ class _ForgotPasswordState extends State<ForgotPassword>
       _isLoading = true;
     });
 
-    // Simulate API call
-    await Future.delayed(const Duration(seconds: 2));
-
-    setState(() {
-      _isLoading = false;
-    });
-
-    Get.to(() => const SetNewPassword());
+    try {
+      await _auth.sendPasswordResetEmail(email: email);
+      _showSnackBar('Password reset link has been sent to your email');
+      Get.offAll(() => const LoginScreen());
+    } on FirebaseAuthException catch (e) {
+      String message = "An error occurred";
+      if (e.code == 'user-not-found') {
+        message = "No user found with this email";
+      } else if (e.code == 'invalid-email') {
+        message = "Invalid email address";
+      }
+      _showSnackBar(message, isError: true);
+    } catch (e) {
+      _showSnackBar("Failed to send reset link", isError: true);
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    }
   }
 
-  void _showSnackBar(String message) {
+  void _showSnackBar(String message, {bool isError = false}) {
+    if (!mounted) return;
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),
-        backgroundColor: Colors.red[400],
+        backgroundColor: isError ? Colors.red[400] : Colors.green[400],
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
       ),
@@ -166,7 +182,7 @@ class _ForgotPasswordState extends State<ForgotPassword>
 
                       // Title
                       Text(
-                        "VERIFICATION CODE",
+                        "RESET PASSWORD",
                         style: TextStyle(
                           color: const Color(0xff060121),
                           fontWeight: FontWeight.w900,
@@ -176,7 +192,7 @@ class _ForgotPasswordState extends State<ForgotPassword>
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        "A code has been sent to your email",
+                        "Enter your email to receive a reset link",
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           color: Colors.grey[600],
@@ -186,7 +202,7 @@ class _ForgotPasswordState extends State<ForgotPassword>
                       ),
                       const SizedBox(height: 32),
 
-                      // Code Input Field
+                      // Email Input Field
                       Container(
                         decoration: BoxDecoration(
                           color: Colors.grey[100],
@@ -195,15 +211,17 @@ class _ForgotPasswordState extends State<ForgotPassword>
                               Border.all(color: Colors.grey[300]!, width: 1.5),
                         ),
                         child: TextField(
-                          controller: _codeController,
+                          controller: _emailController,
+                          keyboardType: TextInputType.emailAddress,
                           decoration: InputDecoration(
-                            hintText: 'Enter verification code',
+                            hintText: 'Enter your email',
                             hintStyle: TextStyle(color: Colors.grey[500]),
                             prefixIcon: const Icon(
-                              Icons.verified_user_outlined,
+                              Icons.email_outlined,
                               color: Color(0xff060121),
                             ),
-                            suffixIcon: _codeController.text.isNotEmpty
+                            suffixIcon: _emailController.text.isNotEmpty &&
+                                    _emailController.text.contains('@')
                                 ? Icon(
                                     Icons.check_circle,
                                     color: Colors.green[400],
@@ -277,7 +295,9 @@ class _ForgotPasswordState extends State<ForgotPassword>
                                     ),
                                   const SizedBox(width: 10),
                                   Text(
-                                    _isLoading ? "VERIFYING..." : "CONTINUE",
+                                    _isLoading
+                                        ? "SENDING..."
+                                        : "SEND RESET LINK",
                                     style: TextStyle(
                                       color: Colors.white,
                                       fontWeight: FontWeight.bold,
@@ -291,42 +311,7 @@ class _ForgotPasswordState extends State<ForgotPassword>
                           ),
                         ),
                       ),
-                      const SizedBox(height: 20),
-
-                      // Resend Code Option
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            "Didn't receive the code? ",
-                            style: TextStyle(
-                              fontSize: fontSizeButton,
-                              color: Colors.grey[700],
-                            ),
-                          ),
-                          GestureDetector(
-                            onTap: _isLoading
-                                ? null
-                                : () {
-                                    // Handle resend code logic
-                                    _showSnackBar(
-                                        'New code sent to your email');
-                                  },
-                            child: Text(
-                              "Resend",
-                              style: TextStyle(
-                                fontSize: fontSizeButton,
-                                color: _isLoading
-                                    ? Colors.grey
-                                    : const Color(0xff060121),
-                                fontWeight: FontWeight.bold,
-                                decoration: TextDecoration.underline,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 12),
+                      const SizedBox(height: 32),
 
                       // Back to Login
                       TextButton(

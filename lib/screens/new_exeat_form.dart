@@ -284,7 +284,12 @@ class _NewExeatFormState extends State<NewExeatForm>
         // Close loading dialog
         Navigator.of(context).pop();
 
-        _showSnackBar('Error: $e');
+        String errorMessage = e.toString();
+        if (errorMessage.startsWith('Exception: ')) {
+          errorMessage = errorMessage.substring(11);
+        }
+
+        _showSnackBar(errorMessage);
       }
     }
   }

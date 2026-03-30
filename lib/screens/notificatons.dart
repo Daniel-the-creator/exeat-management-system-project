@@ -18,12 +18,6 @@ class _NotificationsState extends State<Notifications>
       Get.find<StudentNotificationController>();
 
   String _selectedFilter = 'all';
-  final List<String> _filters = [
-    'all',
-    'STATUS_UPDATE',
-    'NEW_COMMENT',
-    'REQUEST_SUBMITTED'
-  ];
 
   @override
   void initState() {
@@ -230,8 +224,6 @@ class _NotificationsState extends State<Notifications>
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
 
-    double containerWidth =
-        screenWidth < 600 ? screenWidth * 0.95 : screenWidth * 0.6;
     double fontSizeTitle = screenWidth < 600 ? 24 : 30;
     double paddingValue = screenWidth < 600 ? 16 : 24;
 

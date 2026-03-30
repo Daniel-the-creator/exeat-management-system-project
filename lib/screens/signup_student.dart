@@ -66,6 +66,8 @@ class _SignupState extends State<Signup> with TickerProviderStateMixin {
   bool _detailsMatch = false;
   String _mismatchErrors = '';
 
+  bool get canSubmit => _allocationFound && _detailsMatch && !_isLoading;
+
   // Phone validation
   String _phoneError = '';
   final List<String> _validPrefixes = ['070', '080', '081', '090', '091'];
@@ -1453,12 +1455,12 @@ class _SignupState extends State<Signup> with TickerProviderStateMixin {
   }
 
   Widget _buildActionButton(double paddingValue, double fontSizeButton) {
-    final canSubmit = _allocationFound && _detailsMatch && !_isLoading;
+    final bool isActive = (_allocationFound && _detailsMatch) || _isLoading;
 
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
-        gradient: canSubmit
+        gradient: isActive
             ? const LinearGradient(
                 colors: [
                   Color(0xff060121),
@@ -1472,7 +1474,7 @@ class _SignupState extends State<Signup> with TickerProviderStateMixin {
                 ],
               ),
         borderRadius: BorderRadius.circular(16),
-        boxShadow: canSubmit
+        boxShadow: isActive
             ? [
                 BoxShadow(
                   color: const Color(0xff060121).withOpacity(0.4),
@@ -1491,13 +1493,29 @@ class _SignupState extends State<Signup> with TickerProviderStateMixin {
             padding: EdgeInsets.symmetric(vertical: paddingValue * 0.9),
             child: Center(
               child: _isLoading
-                  ? const SizedBox(
-                      width: 20,
-                      height: 20,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                      ),
+                  ? Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            valueColor:
+                                AlwaysStoppedAnimation<Color>(Colors.white),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Text(
+                          "SIGNING UP...",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: fontSizeButton + 2,
+                            letterSpacing: 1.2,
+                          ),
+                        ),
+                      ],
                     )
                   : Text(
                       !_allocationFound

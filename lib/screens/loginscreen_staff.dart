@@ -57,6 +57,10 @@ class _LoginscreenStaffState extends State<LoginscreenStaff>
 
     _fadeController.forward();
     _slideController.forward();
+
+    // Add listeners to rebuild UI when user types
+    _emailController.addListener(() => setState(() {}));
+    _passwordController.addListener(() => setState(() {}));
   }
 
   @override
@@ -527,10 +531,13 @@ class _LoginscreenStaffState extends State<LoginscreenStaff>
   }
 
   Widget _buildLoginButton(double paddingValue, double fontSizeButton) {
+    final bool hasData =
+        _emailController.text.isNotEmpty && _passwordController.text.isNotEmpty;
+
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
-        gradient: _isLoading
+        gradient: !hasData && !_isLoading
             ? null
             : const LinearGradient(
                 colors: [
@@ -538,8 +545,9 @@ class _LoginscreenStaffState extends State<LoginscreenStaff>
                   Color(0xff2d1b5e),
                 ],
               ),
+        color: !hasData && !_isLoading ? Colors.grey[400] : null,
         borderRadius: BorderRadius.circular(16),
-        boxShadow: _isLoading
+        boxShadow: !hasData && !_isLoading
             ? null
             : [
                 BoxShadow(
@@ -552,22 +560,38 @@ class _LoginscreenStaffState extends State<LoginscreenStaff>
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          onTap: _isLoading ? null : _handleLogin,
+          onTap: _isLoading || !hasData ? null : _handleLogin,
           borderRadius: BorderRadius.circular(16),
           child: Container(
             padding: EdgeInsets.symmetric(vertical: paddingValue * 0.9),
             child: Center(
               child: _isLoading
-                  ? const SizedBox(
-                      width: 20,
-                      height: 20,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                      ),
+                  ? Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            valueColor:
+                                AlwaysStoppedAnimation<Color>(Colors.white),
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Text(
+                          "LOGGING IN...",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: fontSizeButton + 2,
+                            letterSpacing: 1.2,
+                          ),
+                        ),
+                      ],
                     )
                   : Text(
-                      "LOG IN AS ADMIN",
+                      !hasData ? "ENTER YOUR DETAILS" : "LOG IN AS ADMIN",
                       style: TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,

@@ -41,6 +41,50 @@ class ExeatService {
       print('🎓 Student Hall ID: $hallId');
       print('🎓 Student Department ID: $departmentId');
 
+      // --- SEMESTER LIMIT CHECK (10 Days per 4 Months) ---
+      final fourMonthsAgo = DateTime.now().subtract(const Duration(days: 120));
+      final studentRequestsSnapshot = await _firestore
+          .collection('requests')
+          .where('studentId', isEqualTo: user.uid)
+          .get();
+
+      int usedDays = 0;
+      for (var doc in studentRequestsSnapshot.docs) {
+        final data = doc.data();
+        final status = data['status'] as String? ?? '';
+        final createdAtTs = data['createdAt'] as Timestamp?;
+
+        if (createdAtTs != null && createdAtTs.toDate().isAfter(fourMonthsAgo)) {
+          // Count only requests that are approved or pending
+          if (status != 'rejected' && status != 'cancelled') {
+            final reqLeaveDateStr = data['leaveDate'] as String?;
+            final reqReturnDateStr = data['returnDate'] as String?;
+            if (reqLeaveDateStr != null && reqReturnDateStr != null) {
+              final reqLeaveDate = _parseDateString(reqLeaveDateStr);
+              final reqReturnDate = _parseDateString(reqReturnDateStr);
+              if (reqLeaveDate != null && reqReturnDate != null) {
+                final days = reqReturnDate.difference(reqLeaveDate).inDays;
+                usedDays += days > 0 ? days : 1; // Minimum 1 day
+              }
+            }
+          }
+        }
+      }
+
+      // Calculate days for the current request
+      final currentLeaveDate = _parseDateString(leaveDate);
+      final currentReturnDate = _parseDateString(returnDate);
+      int currentDays = 0;
+      if (currentLeaveDate != null && currentReturnDate != null) {
+        final days = currentReturnDate.difference(currentLeaveDate).inDays;
+        currentDays = days > 0 ? days : 1;
+      }
+
+      if (usedDays + currentDays > 10) {
+        throw Exception('Semester limit exceeded. You have already used $usedDays out of 10 days allowed in the last 4 months. This request requires $currentDays days.');
+      }
+      // ---------------------------------------------------
+
       // Create new document reference
       final requestRef = _firestore.collection('requests').doc();
       final requestId = requestRef.id;
@@ -671,5 +715,19 @@ class ExeatService {
     return query.snapshots().map((snapshot) => snapshot.docs
         .map((doc) => RequestModel.fromMap(doc.data(), doc.id))
         .toList());
+  }
+
+  // Helper method to parse purely formatted DD/MM/YYYY date strings into DateTime objects
+  DateTime? _parseDateString(String dateStr) {
+    try {
+      final parts = dateStr.split('/');
+      if (parts.length != 3) return null;
+      final day = int.parse(parts[0]);
+      final month = int.parse(parts[1]);
+      final year = int.parse(parts[2]);
+      return DateTime(year, month, day);
+    } catch (e) {
+      return null;
+    }
   }
 }

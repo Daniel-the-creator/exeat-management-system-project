@@ -1358,9 +1358,8 @@ class _SignupStaffState extends State<SignupStaff>
                           child: Container(
                             width: double.infinity,
                             decoration: BoxDecoration(
-                              gradient: _isLoading ||
-                                      !_allocationFound ||
-                                      !_detailsMatch
+                              gradient: !_isLoading &&
+                                      (!_allocationFound || !_detailsMatch)
                                   ? null
                                   : const LinearGradient(
                                       colors: [
@@ -1368,10 +1367,13 @@ class _SignupStaffState extends State<SignupStaff>
                                         Color(0xff2d1b5e),
                                       ],
                                     ),
+                              color: !_isLoading &&
+                                      (!_allocationFound || !_detailsMatch)
+                                  ? Colors.grey[400]
+                                  : null,
                               borderRadius: BorderRadius.circular(16),
-                              boxShadow: _isLoading ||
-                                      !_allocationFound ||
-                                      !_detailsMatch
+                              boxShadow: !_isLoading &&
+                                      (!_allocationFound || !_detailsMatch)
                                   ? null
                                   : [
                                       BoxShadow(
@@ -1396,15 +1398,31 @@ class _SignupStaffState extends State<SignupStaff>
                                       vertical: paddingValue * 0.9),
                                   child: Center(
                                     child: _isLoading
-                                        ? const SizedBox(
-                                            width: 20,
-                                            height: 20,
-                                            child: CircularProgressIndicator(
-                                              strokeWidth: 2,
-                                              valueColor:
-                                                  AlwaysStoppedAnimation<Color>(
-                                                      Colors.white),
-                                            ),
+                                        ? Row(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              const SizedBox(
+                                                width: 20,
+                                                height: 20,
+                                                child:
+                                                    CircularProgressIndicator(
+                                                  strokeWidth: 2,
+                                                  valueColor:
+                                                      AlwaysStoppedAnimation<
+                                                          Color>(Colors.white),
+                                                ),
+                                              ),
+                                              const SizedBox(width: 12),
+                                              Text(
+                                                "SIGNING UP...",
+                                                style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: fontSizeButton + 2,
+                                                  letterSpacing: 1.2,
+                                                ),
+                                              ),
+                                            ],
                                           )
                                         : Text(
                                             !_allocationFound
