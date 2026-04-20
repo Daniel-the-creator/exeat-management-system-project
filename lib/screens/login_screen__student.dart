@@ -270,7 +270,7 @@ class _LoginScreenState extends State<LoginScreen>
 
                         // Welcome Text
                         Text(
-                          "STUDENTS",
+                          "STUDENTS page",
                           style: TextStyle(
                             color: const Color(0xff060121),
                             fontWeight: FontWeight.w900,
