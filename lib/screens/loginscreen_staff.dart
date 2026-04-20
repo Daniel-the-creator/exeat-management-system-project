@@ -270,7 +270,7 @@ class _LoginscreenStaffState extends State<LoginscreenStaff>
 
                         // Welcome Text
                         Text(
-                          "ADMIN PORTAL",
+                          "ADMINS",
                           style: TextStyle(
                             color: const Color(0xff060121),
                             fontWeight: FontWeight.w900,
