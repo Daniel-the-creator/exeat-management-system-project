@@ -1040,7 +1040,7 @@ class _SignupState extends State<Signup> with TickerProviderStateMixin {
                           ),
                           padding: const EdgeInsets.symmetric(horizontal: 12),
                           child: DropdownButtonFormField<String>(
-                            value: selectedDepartment,
+                            initialValue: selectedDepartment,
                             decoration: const InputDecoration(
                               border: InputBorder.none,
                               contentPadding: EdgeInsets.symmetric(vertical: 8),
@@ -1103,7 +1103,7 @@ class _SignupState extends State<Signup> with TickerProviderStateMixin {
                           ),
                           padding: const EdgeInsets.symmetric(horizontal: 12),
                           child: DropdownButtonFormField<String>(
-                            value: selectedHostel,
+                            initialValue: selectedHostel,
                             decoration: const InputDecoration(
                               border: InputBorder.none,
                               contentPadding: EdgeInsets.symmetric(vertical: 8),

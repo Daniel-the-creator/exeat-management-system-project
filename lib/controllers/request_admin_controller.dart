@@ -589,12 +589,40 @@ class RequestAdminController extends GetxController {
           studentName: data['studentName'] ?? '',
           studentMatric: data['studentMatric'] ?? '',
         );
+        await _notifyConcernedAdminsOfAction(
+          requestId: requestId,
+          studentName: data['studentName'] ?? '',
+          studentMatric: data['studentMatric'] ?? '',
+          action: 'approved by HOD',
+          actionByRole: adminRole.value,
+          departmentId: data['departmentId'] as String?,
+          hallId: hallId,
+        );
       } else if (finalStatus == 'pending_warden' && hallId.isNotEmpty) {
         await _notifyWardens(
           hallId: hallId,
           requestId: requestId,
           studentName: data['studentName'] ?? '',
           studentMatric: data['studentMatric'] ?? '',
+        );
+        await _notifyConcernedAdminsOfAction(
+          requestId: requestId,
+          studentName: data['studentName'] ?? '',
+          studentMatric: data['studentMatric'] ?? '',
+          action: 'approved by Student Affairs',
+          actionByRole: adminRole.value,
+          departmentId: data['departmentId'] as String?,
+          hallId: hallId,
+        );
+      } else if (finalStatus == 'approved') {
+        await _notifyConcernedAdminsOfAction(
+          requestId: requestId,
+          studentName: data['studentName'] ?? '',
+          studentMatric: data['studentMatric'] ?? '',
+          action: 'fully approved',
+          actionByRole: adminRole.value,
+          departmentId: data['departmentId'] as String?,
+          hallId: hallId,
         );
       } else if (finalStatus == 'rejected') {
         // Notify all admins involved that request was rejected
@@ -604,6 +632,15 @@ class RequestAdminController extends GetxController {
           studentMatric: data['studentMatric'] ?? '',
           rejectedBy: adminRole.value,
           adminNote: updatedAdminNote,
+        );
+        await _notifyConcernedAdminsOfAction(
+          requestId: requestId,
+          studentName: data['studentName'] ?? '',
+          studentMatric: data['studentMatric'] ?? '',
+          action: 'declined',
+          actionByRole: adminRole.value,
+          departmentId: data['departmentId'] as String?,
+          hallId: hallId,
         );
       }
 
@@ -849,6 +886,72 @@ class RequestAdminController extends GetxController {
       }
     } catch (e) {
       print('❌ Error notifying about rejected request: $e');
+    }
+  }
+
+  Future<void> _notifyConcernedAdminsOfAction({
+    required String requestId,
+    required String studentName,
+    required String studentMatric,
+    required String action,
+    required String actionByRole,
+    String? departmentId,
+    String? hallId,
+  }) async {
+    try {
+      final currentAdminId = _auth.currentUser?.uid;
+      List<String> adminIdsToNotify = [];
+
+      // 1. Get HODs for the department
+      if (departmentId != null && departmentId.isNotEmpty) {
+        final hodAdmins = await _firestore.collection('admins')
+            .where('departmentId', isEqualTo: departmentId).get();
+        for (var doc in hodAdmins.docs) {
+          final role = (doc.data()['role'] as String? ?? '').toLowerCase();
+          if (role.contains('hod') && doc.id != currentAdminId) {
+            adminIdsToNotify.add(doc.id);
+          }
+        }
+      }
+
+      // 2. Get Wardens for the hall
+      if (hallId != null && hallId.isNotEmpty) {
+        final wardenAdmins = await _firestore.collection('admins')
+            .where('hallId', isEqualTo: hallId).get();
+        for (var doc in wardenAdmins.docs) {
+          final role = (doc.data()['role'] as String? ?? '').toLowerCase();
+          if ((role.contains('warden') || role.contains('hall')) && doc.id != currentAdminId) {
+            if (!adminIdsToNotify.contains(doc.id)) adminIdsToNotify.add(doc.id);
+          }
+        }
+      }
+
+      // 3. Get Student Affairs / Super Admins
+      final saAdmins = await _firestore.collection('admins').get();
+      for (var doc in saAdmins.docs) {
+        final role = (doc.data()['role'] as String? ?? '').toLowerCase();
+        if ((role.contains('student') && role.contains('affairs')) || role.contains('super')) {
+          if (doc.id != currentAdminId && !adminIdsToNotify.contains(doc.id)) {
+            adminIdsToNotify.add(doc.id);
+          }
+        }
+      }
+
+      // Create notifications
+      for (final adminId in adminIdsToNotify) {
+        await _firestore.collection('notifications').add({
+          'recipientId': adminId,
+          'recipientType': 'admin',
+          'type': 'REQUEST_STATUS_CHANGE',
+          'title': 'Exeat $action',
+          'message': '$studentName ($studentMatric) exeat request was $action by $actionByRole.',
+          'requestId': requestId,
+          'isRead': false,
+          'createdAt': FieldValue.serverTimestamp(),
+        });
+      }
+    } catch (e) {
+      print('❌ Error notifying concerned admins: $e');
     }
   }
 

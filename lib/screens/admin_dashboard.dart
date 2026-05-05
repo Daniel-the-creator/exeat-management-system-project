@@ -5,6 +5,7 @@ import 'package:exeat_system/screens/data_analysis.dart';
 import 'package:exeat_system/screens/declined_request.dart';
 import 'package:exeat_system/screens/notification__admin.dart';
 import 'package:exeat_system/screens/pending_request.dart';
+import 'package:exeat_system/screens/allocate_students_screen.dart';
 import 'package:exeat_system/controllers/request_admin_controller.dart';
 import 'package:exeat_system/controllers/admin_notification_controller.dart';
 import 'package:flutter/material.dart';
@@ -713,6 +714,33 @@ class _AdminDashboardState extends State<AdminDashboard>
                                 Get.to(() => const StudentsExeatListScreen()),
                           ),
                         ),
+                        
+                        Obx(() {
+                          final normalizedRole = requestController.adminRole.value.toLowerCase().trim();
+                          if (normalizedRole.contains('super') || normalizedRole.contains('super_admin')) {
+                            return Column(
+                              children: [
+                                const SizedBox(height: 12),
+                                _buildAnimatedWidget(
+                                  delay: 0.4,
+                                  child: _actionCard(
+                                    icon: Icons.table_chart_rounded,
+                                    title: "Allocate Students",
+                                    description: "Upload Excel file to allocate students to the system.",
+                                    gradient: LinearGradient(
+                                      colors: [
+                                        Colors.teal.shade300,
+                                        Colors.teal.shade400
+                                      ],
+                                    ),
+                                    onTap: () => Get.to(() => const AllocateStudentsScreen()),
+                                  ),
+                                ),
+                              ],
+                            );
+                          }
+                          return const SizedBox.shrink();
+                        }),
                       ],
                     ),
                   ),

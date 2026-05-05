@@ -1217,7 +1217,9 @@ class _StudentDetailAnalyticsScreenState
     }
     if (lower.contains('religious') ||
         lower.contains('church') ||
-        lower.contains('mosque')) return Icons.church;
+        lower.contains('mosque')) {
+      return Icons.church;
+    }
     if (lower.contains('emergency')) return Icons.warning_amber;
     return Icons.help_outline;
   }

@@ -1133,7 +1133,7 @@ class _SignupStaffState extends State<SignupStaff>
                           ),
                           padding: const EdgeInsets.symmetric(horizontal: 12),
                           child: DropdownButtonFormField<String>(
-                            value: selectedRole,
+                            initialValue: selectedRole,
                             decoration: const InputDecoration(
                               border: InputBorder.none,
                               contentPadding: EdgeInsets.symmetric(vertical: 8),
@@ -1182,7 +1182,7 @@ class _SignupStaffState extends State<SignupStaff>
                             ),
                             padding: const EdgeInsets.symmetric(horizontal: 12),
                             child: DropdownButtonFormField<String>(
-                              value: selectedDepartment,
+                              initialValue: selectedDepartment,
                               decoration: const InputDecoration(
                                 border: InputBorder.none,
                                 contentPadding:
@@ -1231,7 +1231,7 @@ class _SignupStaffState extends State<SignupStaff>
                             ),
                             padding: const EdgeInsets.symmetric(horizontal: 12),
                             child: DropdownButtonFormField<String>(
-                              value: selectedHall,
+                              initialValue: selectedHall,
                               decoration: const InputDecoration(
                                 border: InputBorder.none,
                                 contentPadding:
