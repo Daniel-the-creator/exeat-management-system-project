@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:excel/excel.dart';
-import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:get/get.dart';
 
@@ -22,6 +21,7 @@ class _AllocateStudentsScreenState extends State<AllocateStudentsScreen> {
       FilePickerResult? result = await FilePicker.platform.pickFiles(
         type: FileType.custom,
         allowedExtensions: ['xlsx', 'xls'],
+        withData: true,
       );
 
       if (result != null) {
@@ -31,8 +31,12 @@ class _AllocateStudentsScreenState extends State<AllocateStudentsScreen> {
           totalRows = 0;
         });
 
-        File file = File(result.files.single.path!);
-        var bytes = file.readAsBytesSync();
+        var bytes = result.files.single.bytes;
+        if (bytes == null) {
+          Get.snackbar('Error', 'Failed to read file data.');
+          setState(() { isUploading = false; });
+          return;
+        }
         var excel = Excel.decodeBytes(bytes);
 
         List<Map<String, dynamic>> studentsData = [];
