@@ -52,51 +52,54 @@ class _AllocateStudentsScreenState extends State<AllocateStudentsScreen> {
           int phoneIndex = -1;
 
           for (var row in sheet.rows) {
-            if (isFirstRow) {
+            if (matricIndex == -1) {
               for (int i = 0; i < row.length; i++) {
                 String header =
                     row[i]?.value?.toString().toLowerCase().trim() ?? '';
                 if (header.contains('matric')) {
                   matricIndex = i;
-                } else if (header.contains('name'))
+                } else if (header.contains('name')) {
                   nameIndex = i;
-                else if (header.contains('email'))
+                } else if (header.contains('email')) {
                   emailIndex = i;
-                else if (header.contains('dept') ||
-                    header.contains('department'))
+                } else if (header.contains('dept') ||
+                    header.contains('department')) {
                   deptIndex = i;
-                else if (header.contains('hall') || header.contains('hostel'))
+                } else if (header.contains('hall') || header.contains('hostel')) {
                   hallIndex = i;
-                else if (header.contains('phone')) phoneIndex = i;
+                } else if (header.contains('phone')) {
+                  phoneIndex = i;
+                }
               }
-              isFirstRow = false;
-              continue;
-            }
-
-            if (matricIndex != -1 && row[matricIndex] != null) {
-              String matricNo = row[matricIndex]?.value?.toString() ?? '';
-              if (matricNo.isNotEmpty) {
-                studentsData.add({
-                  'matricNo': matricNo,
-                  'fullName': nameIndex != -1
-                      ? (row[nameIndex]?.value?.toString() ?? '')
-                      : '',
-                  'email': emailIndex != -1
-                      ? (row[emailIndex]?.value?.toString() ?? '')
-                      : '',
-                  'department': deptIndex != -1
-                      ? (row[deptIndex]?.value?.toString() ?? '')
-                      : '',
-                  'hall': hallIndex != -1
-                      ? (row[hallIndex]?.value?.toString() ?? '')
-                      : '',
-                  'phone': phoneIndex != -1
-                      ? (row[phoneIndex]?.value?.toString() ?? '')
-                      : '',
-                  'role': 'student',
-                  'profileImage': '',
-                  'createdAt': FieldValue.serverTimestamp(),
-                });
+              if (matricIndex != -1) {
+                continue;
+              }
+            } else {
+              if (row[matricIndex] != null) {
+                String matricNo = row[matricIndex]?.value?.toString() ?? '';
+                if (matricNo.isNotEmpty) {
+                  studentsData.add({
+                    'matricNo': matricNo,
+                    'fullName': nameIndex != -1
+                        ? (row[nameIndex]?.value?.toString() ?? '')
+                        : '',
+                    'email': emailIndex != -1
+                        ? (row[emailIndex]?.value?.toString() ?? '')
+                        : '',
+                    'department': deptIndex != -1
+                        ? (row[deptIndex]?.value?.toString() ?? '')
+                        : '',
+                    'hall': hallIndex != -1
+                        ? (row[hallIndex]?.value?.toString() ?? '')
+                        : '',
+                    'phone': phoneIndex != -1
+                        ? (row[phoneIndex]?.value?.toString() ?? '')
+                        : '',
+                    'role': 'student',
+                    'profileImage': '',
+                    'createdAt': FieldValue.serverTimestamp(),
+                  });
+                }
               }
             }
           }
@@ -119,8 +122,8 @@ class _AllocateStudentsScreenState extends State<AllocateStudentsScreen> {
         for (var data in studentsData) {
           String matric = data['matricNo'];
           var docRef = FirebaseFirestore.instance
-              .collection('students')
-              .doc(matric); // Or users collection
+              .collection('allocated_students')
+              .doc(matric);
           batch.set(docRef, data, SetOptions(merge: true));
 
           setState(() {
