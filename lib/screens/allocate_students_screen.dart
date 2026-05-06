@@ -34,12 +34,14 @@ class _AllocateStudentsScreenState extends State<AllocateStudentsScreen> {
         var bytes = result.files.single.bytes;
         if (bytes == null) {
           Get.snackbar('Error', 'Failed to read file data.');
-          setState(() { isUploading = false; });
+          setState(() {
+            isUploading = false;
+          });
           return;
         }
         var excel = Excel.decodeBytes(bytes);
 
-        List<Map<String, dynamic>> studentsData = [];
+        Map<String, Map<String, dynamic>> studentsData = {};
 
         for (var table in excel.tables.keys) {
           var sheet = excel.tables[table]!;
@@ -65,7 +67,8 @@ class _AllocateStudentsScreenState extends State<AllocateStudentsScreen> {
                 } else if (header.contains('dept') ||
                     header.contains('department')) {
                   deptIndex = i;
-                } else if (header.contains('hall') || header.contains('hostel')) {
+                } else if (header.contains('hall') ||
+                    header.contains('hostel')) {
                   hallIndex = i;
                 } else if (header.contains('phone')) {
                   phoneIndex = i;
@@ -78,7 +81,7 @@ class _AllocateStudentsScreenState extends State<AllocateStudentsScreen> {
               if (row[matricIndex] != null) {
                 String matricNo = row[matricIndex]?.value?.toString() ?? '';
                 if (matricNo.isNotEmpty) {
-                  studentsData.add({
+                  studentsData[matricNo] = {
                     'matricNo': matricNo,
                     'fullName': nameIndex != -1
                         ? (row[nameIndex]?.value?.toString() ?? '')
@@ -98,7 +101,7 @@ class _AllocateStudentsScreenState extends State<AllocateStudentsScreen> {
                     'role': 'student',
                     'profileImage': '',
                     'createdAt': FieldValue.serverTimestamp(),
-                  });
+                  };
                 }
               }
             }
@@ -119,7 +122,7 @@ class _AllocateStudentsScreenState extends State<AllocateStudentsScreen> {
         }
 
         final batch = FirebaseFirestore.instance.batch();
-        for (var data in studentsData) {
+        for (var data in studentsData.values) {
           String matric = data['matricNo'];
           var docRef = FirebaseFirestore.instance
               .collection('allocated_students')
@@ -191,7 +194,7 @@ class _AllocateStudentsScreenState extends State<AllocateStudentsScreen> {
                 ElevatedButton.icon(
                   onPressed: pickAndUploadExcel,
                   icon: const Icon(Icons.table_chart),
-                  label: const Text('Select Excel File'),
+                  label: const Text('Select Excel File to allocate students'),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xff2d1b5e),
                     foregroundColor: Colors.white,
